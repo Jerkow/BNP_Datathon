@@ -145,3 +145,4 @@ data_test
 data_val
 resources/bert_base_ner
 resources/distilbert-base-nli-stsb-mean-tokens
+.vscode
