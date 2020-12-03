@@ -6,6 +6,11 @@ from datathon_ai.extractors import BasicCountryExtractor, BasicExtractor, Questi
 from datathon_ai.interfaces import FormDataModel, CountryReferential, COUNTRY_QUESTIONS_NUMBERS, \
     NOT_COUNTRY_QUESTIONS_NUMBERS
 
+from sentence_transformers import SentenceTransformer
+import gc
+
+# model = SentenceTransformer('distilroberta-base-msmarco-v2')
+# model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
 
 def main() -> Dict[int, int]:
     """
@@ -18,6 +23,7 @@ def main() -> Dict[int, int]:
     # DOCUMENTS DIRECTORY
     # Path of the directory that contains the .txt documents. One .txt document by company. IT NEEDS TO BE "/data" when you upload it in data challenge platform. For test in local, you can modifiy to match your data path.
     documents_directory = "/data"
+    # documents_directory = "../example_dataset/data"
     path_to_files: List[str] = [os.path.join(documents_directory, file) for file in os.listdir(documents_directory)]
     assert len(path_to_files) == 10  # 10 files in documents directory
     path_to_files.sort() # Sort list of path file by alphabetical order to match ground truth annotations order : IT IS ESSENTIAL.
@@ -32,12 +38,13 @@ def main() -> Dict[int, int]:
     form_company_filling = FormCompanyFilling([
         BasicExtractor(
             question_ids=NOT_COUNTRY_QUESTIONS_NUMBERS,
-            form_data_model=data_model
+            form_data_model=data_model,
         ),
         BasicCountryExtractor(
             question_ids=COUNTRY_QUESTIONS_NUMBERS,
             form_data_model=data_model,
-            country_code_referential=country_referential
+            country_code_referential=country_referential,
+
         )
     ])
 
@@ -54,6 +61,7 @@ def main() -> Dict[int, int]:
         for answer in form_company_response.answers:
             question_number = answer.question_id + i * 22 # ESSENTIAL : each company has 22 questions. Each question_number in results should be unique
             results[question_number] = answer.answer_id
+        gc.collect()
 
     # CHECK FORMAT RESULTS IS DATACHALLENGE PLATFORM COMPATIBLE
     assert len(results) == len(path_to_files) * (len(COUNTRY_QUESTIONS_NUMBERS) + len(NOT_COUNTRY_QUESTIONS_NUMBERS))
@@ -63,3 +71,4 @@ def main() -> Dict[int, int]:
 
 if __name__ == "__main__":
     main()
+

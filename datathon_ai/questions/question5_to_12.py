@@ -4,11 +4,12 @@ import pandas as pd
 import io
 import numpy as np
 import matplotlib.pyplot as plt
-from sentence_transformers import SentenceTransformer
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
-from transformers import AutoModel, AutoTokenizer
+from sentence_transformers import SentenceTransformer
 
-model = AutoTokenizer.from_pretrained('./resources/distilbert-base-nli-stsb-mean-tokens/')
+# model = SentenceTransformer('distilroberta-base-msmarco-v2')
+model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
+
 
 questions = {5: {"question": "In which countries outside of the EU the data can be transferred to ?", "key_words": ["transfer"]},
             9: {"question": "What is the country of the applicable law of the contract?", "key_words": ["applicable law", "applicable", "applicable laws"]},
@@ -77,6 +78,8 @@ def get_paragraph(question, sentences):
     patterns = [nlp.make_doc(key_word) for key_word in key_words]
     matcher.add("key_words", None, *patterns)
 
+    embeddings = model.encode(sentences)
+
     similarities = [0]*len(sentences)
     max_sim = 0
     index = 0
@@ -88,7 +91,7 @@ def get_paragraph(question, sentences):
         if count > 0:
             sim = 0
             for k in range(-n,n+1):
-                sim += cosine(question_vec, model.encode([sentences[i]])[0])
+                sim += cosine(question_vec, embeddings[i])
             similarities[i] = sim*count
             if sim > max_sim :
                 max_sim = sim

@@ -3,7 +3,7 @@ from scipy import spatial
 # from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer
 
-model = AutoTokenizer.from_pretrained('./resources/distilbert-base-nli-stsb-mean-tokens/')
+# model = AutoTokenizer.from_pretrained('./resources/distilbert-base-nli-stsb-mean-tokens/')
 # model = SentenceTransformer('distilbert-base-nli-mean-tokens')
 
 
