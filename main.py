@@ -17,7 +17,7 @@ def main() -> Dict[int, int]:
     """
     # DOCUMENTS DIRECTORY
     # Path of the directory that contains the .txt documents. One .txt document by company. IT NEEDS TO BE "/data" when you upload it in data challenge platform. For test in local, you can modifiy to match your data path.
-    documents_directory = "../example_dataset/data"
+    documents_directory = "/data"
     path_to_files: List[str] = [os.path.join(documents_directory, file) for file in os.listdir(documents_directory)]
     assert len(path_to_files) == 10  # 10 files in documents directory
     path_to_files.sort() # Sort list of path file by alphabetical order to match ground truth annotations order : IT IS ESSENTIAL.
