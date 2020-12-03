@@ -149,7 +149,7 @@ def question8(question, sentences):
         justification += ' '.join([str(a) for a in list(doc[m[0]: m[1] + 20])])
     print(justification)
     Answers = ["No", "Yes"]
-    return QuestionResponse(answer_id=Answers[matches != []], question_id=8, justification='justification')
+    return QuestionResponse(answer_id=Answers[matches != []], question_id=8, justification=justification)
     
 # Questions 9, 10
 def question9(question, sentences):
