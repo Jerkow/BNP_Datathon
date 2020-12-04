@@ -36,3 +36,7 @@ for key, l in countries_dict.items():
     for x in l:
         countries_dict_inverse[x] = key
 
+def prepare_sentences(sentences):
+    text_list = sentences.split("\n")
+    text_list = [a for a in text_list if len(a) > 10]
+    return text_list
