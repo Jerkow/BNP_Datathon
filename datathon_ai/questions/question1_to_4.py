@@ -5,9 +5,10 @@ from spacy.matcher import Matcher
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
 import pandas as pd
 import numpy as np
-nlp = spacy.load("/apps/models/ner_spacy_en")
-# from utils import countries_dict_inverse
+# nlp = spacy.load("/apps/models/ner_spacy_en")
+nlp = spacy.load("en_core_web_sm")
 
+# from utils import countries_dict_inverse
 
 eu = pd.read_csv('resources/eu.csv')
 eu = list(np.array(eu.values).transpose()[0])
@@ -18,7 +19,7 @@ def question1(text):
     text_lower = text.lower()
     key_words = ["Personal data", "Personal information"]
     for key in key_words:
-        index = text_lower.find(key)
+        index = text_lower.find(key.lower())
         if index != -1:
             justification = text[index : index + len(key) + 200]
             return QuestionResponse(answer_id=1, question_id=1, justification=justification)
@@ -29,7 +30,7 @@ def question2(text):
     text_lower = text.lower()
     key_words = ["DPA", "Data processing agreement", "Data protection agreement", "Data processing addendum", "Data protection addendum"]
     for key in key_words:
-        index = text_lower.find(key)
+        index = text_lower.find(key.lower())
         if index != -1:
             justification = text[index : index + len(key) + 200]
             return QuestionResponse(answer_id=1, question_id=2, justification=justification)

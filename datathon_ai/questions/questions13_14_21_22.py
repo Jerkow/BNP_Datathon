@@ -3,9 +3,9 @@
 
 from nltk.tokenize import word_tokenize
 from scipy import spatial
-from sentence_transformers import SentenceTransformer
-from transformers import AutoModel, AutoTokenizer
-from datathon_ai.interfaces import FormDataModel, QuestionResponse
+from datathon_ai.interfaces import QuestionResponse
+from .utils import prepare_sentences
+
 
 
 # model = AutoTokenizer.from_pretrained('./resources/distilbert-base-nli-stsb-mean-tokens/')
@@ -28,8 +28,8 @@ def is_cost_mentioned(whole_text, embeddings, model):
                  'Are there any subscription plans?', 'Are there any billings?', 'Is there any license needed to use the product or service?']
     # 'What is the cost of the product or service?'
     question_embeddings = model.encode(questions)
-    paragraphs = [paragraph for paragraph in whole_text.lower().split(
-        "\n") if len(paragraph) > 10]
+    paragraphs = prepare_sentences(whole_text.lower())
+    
     scores = [0 for _ in paragraphs]
     thresh = 0.45   # normalement à trouver par reg log à partir de la seule feature "mesure de similarité" ?
 
@@ -71,8 +71,7 @@ def is_audit_right_mentioned(whole_text, embeddings, model):
     questions = ['Are there full rights for the user in the GDPR?', 'Will the user have audit rights?',
                  'Does the user have the right to audit his data?', 'Is auditing possible?']
     question_embeddings = model.encode(questions)
-    paragraphs = [paragraph for paragraph in whole_text.lower().split(
-        "\n") if len(paragraph) > 0]
+    paragraphs = prepare_sentences(whole_text.lower())
     scores = [0 for _ in paragraphs]
     thresh = 0.4    # normalement à trouver par reg log à partir de la seule feature "mesure de similarité" ?
 

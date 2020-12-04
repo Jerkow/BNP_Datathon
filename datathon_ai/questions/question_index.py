@@ -1,7 +1,7 @@
 from .question5_to_12 import question5, question8, question9, question11
 from .questions13_14_21_22 import is_ISO_27001_certified, is_cost_mentioned, is_audit_right_mentioned, is_retention_date_mentioned
 from .question1_to_4 import question1, question2, question3_4
-from datathon_ai.interfaces import FormDataModel, QuestionResponse
+from datathon_ai.interfaces import QuestionResponse
 
 
 def question(question, text, embeddings, model):
