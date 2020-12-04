@@ -5,8 +5,8 @@ from spacy.matcher import Matcher
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
 import pandas as pd
 import numpy as np
-nlp = spacy.load("/apps/models/ner_spacy_en")
-# nlp = spacy.load("en_core_web_sm")
+# nlp = spacy.load("/apps/models/ner_spacy_en")
+nlp = spacy.load("en_core_web_sm")
 
 # from utils import countries_dict_inverse
 

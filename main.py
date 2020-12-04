@@ -9,7 +9,7 @@ from datathon_ai.interfaces import FormDataModel, CountryReferential, COUNTRY_QU
 from sentence_transformers import SentenceTransformer
 import time
 
-dev = False
+dev = True
 
 if dev:
     model = SentenceTransformer('distilroberta-base-msmarco-v2')
@@ -18,7 +18,7 @@ else:
 
 def prepare_sentences(sentences):
     text_list = sentences.split("\n")
-    text_list = [a for a in text_list if len(a) > 30]
+    text_list = [a for a in text_list if len(a) > 10]
     return text_list
 
 def main() -> Dict[int, int]:
