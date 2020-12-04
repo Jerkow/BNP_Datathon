@@ -3,7 +3,13 @@ import spacy
 from spacy.matcher import PhraseMatcher
 from spacy.matcher import Matcher
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
-nlp = spacy.load("/apps/models/ner_spacy_en")
+import pandas as pd
+import numpy as np
+nlp = spacy.load("en_core_web_sm")
+
+eu = pd.read_csv('resources/eu.csv')
+eu = list(np.array(eu.values).transpose()[0])
+eu = [country.lower() for country in eu]
 
 
 def question1(text):
@@ -89,22 +95,15 @@ def question3_4(text):
             if transfer_countries_paragraph != []:
                 countries_out_europe = []
                 for localisation in transfer_countries:
-                    try:
-                        #countries = pycountry.countries.search_fuzzy(localisation)
-                        countries = [localisation]
-                        if len(countries) == 1:
-                            #country = countries[0]
-                            #continent = pc.country_alpha2_to_continent_code(country.alpha_2)
-                            continent = 'AI'
-                            if continent != 'EU':
-                                countries_out_europe.append(localisation)
-                                transfer_out_of_europe_paragraph = []
-                                for par in transfer_countries_paragraph:
-                                    if localisation in par:
-                                        transfer_out_of_europe_paragraph.append(par)
-                    except:
-                        continue
-            
+                    #countries = pycountry.countries.search_fuzzy(localisation)
+                    is_in_europe = localisation.lower() in eu
+                    continent = 'EU' if is_in_europe else ' '
+                    if continent != 'EU':
+                        countries_out_europe.append(localisation)
+                        transfer_out_of_europe_paragraph = []
+                        for par in transfer_countries_paragraph:
+                            if localisation in par:
+                                transfer_out_of_europe_paragraph.append(par)
                 if countries_out_europe != []:
                     last_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
                     patterns = [nlp.make_doc(name) for name in ["Other countries", "Other country", "Third countries", "Third country", "Country out of", "Countries out of", "Country outside", "country outside"]]
