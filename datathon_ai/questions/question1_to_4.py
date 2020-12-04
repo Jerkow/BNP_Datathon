@@ -3,8 +3,6 @@ import spacy
 from spacy.matcher import PhraseMatcher
 from spacy.matcher import Matcher
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
-import pycountry
-import pycountry_convert as pc
 nlp = spacy.load("en_core_web_sm")
 
 
@@ -92,10 +90,12 @@ def question3_4(text):
                 countries_out_europe = []
                 for localisation in transfer_countries:
                     try:
-                        countries = pycountry.countries.search_fuzzy(localisation)
+                        #countries = pycountry.countries.search_fuzzy(localisation)
+                        countries = [localisation]
                         if len(countries) == 1:
-                            country = countries[0]
-                            continent = pc.country_alpha2_to_continent_code(country.alpha_2)
+                            #country = countries[0]
+                            #continent = pc.country_alpha2_to_continent_code(country.alpha_2)
+                            continent = 'AI'
                             if continent != 'EU':
                                 countries_out_europe.append(localisation)
                                 transfer_out_of_europe_paragraph = []
