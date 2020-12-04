@@ -121,7 +121,7 @@ def question9(question, sentences, embeddings, model):
     for s in paragraph:
         for name in demonyms_names:
             name = str(name)
-            index = s.find(name)
+            index = s.lower().find(name.lower())
             if index != -1:
                 country = s[index: index+len(name)]
                 responseNames.add(country)
@@ -139,7 +139,7 @@ def question11(question, sentences, embeddings, model):
     for s in paragraph:
         for name in demonyms_names:
             name = str(name)
-            index = s.find(name)
+            index = s.lower().find(name.lower())
             if index != -1:
                 country = s[index: index+len(name)]
                 responseNames.add(country)
