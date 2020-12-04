@@ -10,7 +10,12 @@ from sentence_transformers import SentenceTransformer
 import gc
 
 # model = SentenceTransformer('distilroberta-base-msmarco-v2')
-# model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
+model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
+
+def prepare_sentences(sentences):
+    text_list = sentences.split("\n")
+    text_list = [a for a in text_list if a != '']
+    return text_list
 
 def main() -> Dict[int, int]:
     """
@@ -56,12 +61,13 @@ def main() -> Dict[int, int]:
         print(f"File : {path}")
         with open(path, "r") as input_file:
             text = input_file.read()
-        form_company_response = form_company_filling.fill(text)
+        embeddings = model.encode(prepare_sentences(text))
+        form_company_response = form_company_filling.fill(text, embeddings)
         form_company_response.sort_by_question_id() # ESSENTIAL : Sort the response by question number for each company
         for answer in form_company_response.answers:
             question_number = answer.question_id + i * 22 # ESSENTIAL : each company has 22 questions. Each question_number in results should be unique
             results[question_number] = answer.answer_id
-        gc.collect()
+        # gc.collect()
 
     # CHECK FORMAT RESULTS IS DATACHALLENGE PLATFORM COMPATIBLE
     assert len(results) == len(path_to_files) * (len(COUNTRY_QUESTIONS_NUMBERS) + len(NOT_COUNTRY_QUESTIONS_NUMBERS))
