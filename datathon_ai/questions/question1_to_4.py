@@ -1,7 +1,5 @@
 #imports
 import spacy
-from spacy.matcher import PhraseMatcher
-from spacy.matcher import Matcher
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
 import pandas as pd
 import numpy as np
@@ -64,7 +62,6 @@ def question3_4(text):
     if transfer_countries_paragraph != []:
         countries_out_europe = []
         for localisation in transfer_countries:
-            #countries = pycountry.countries.search_fuzzy(localisation)
             is_in_europe = localisation.lower() in eu
             continent = 'EU' if is_in_europe else ' '
             if continent != 'EU':
@@ -75,18 +72,15 @@ def question3_4(text):
                         transfer_out_of_europe_paragraph.append(par)
 
         if countries_out_europe != []:
-            last_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-            patterns = [nlp.make_doc(name) for name in ["Other countries", "Other country", "Third countries", "Third country", "Country out of", "Countries out of", "Country outside", "country outside"]]
-            last_matcher.add("Names", None, *patterns)
+            key_words = ["Other countries", "Other country", "Third countries", "Third country", "Country out of", "Countries out of", "Country outside", "countries outside"]
             counter = 0
             for parg in transfer_out_of_europe_paragraph:
-                last_doc = nlp(parg)
-                if(last_matcher(last_doc)!=[]):
-                    print(1, " Yes&No")
-                    counter = 0
-                    return [QuestionResponse(answer_id=1, question_id=3, justification=""), QuestionResponse(answer_id=0, question_id=4, justification="")]
-                else:
-                    counter +=1
+                parg_lower = parg.lower()
+                for key in key_words:
+                    if key.lower() in parg_lower:
+                        return [QuestionResponse(answer_id=1, question_id=3, justification=""), QuestionResponse(answer_id=0, question_id=4, justification="")]
+                    else:
+                        counter +=1
             if counter > 0:
                 return [QuestionResponse(answer_id=1, question_id=3, justification=""), QuestionResponse(answer_id=1, question_id=4, justification="")]
         
