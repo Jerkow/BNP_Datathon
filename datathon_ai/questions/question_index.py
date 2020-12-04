@@ -12,7 +12,7 @@ def question(question, text, embeddings, model):
         return question2(text)
     elif question_id == 3:
         return question3_4(text)
-    if question_id == 5:
+    elif question_id == 5:
         return question5(question, text, embeddings, model)
     elif question_id == 8:
         return question8(question, text)

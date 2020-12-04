@@ -75,6 +75,10 @@ def get_country_data():
     return countries_dict, names, eu, demonyms
 
 
+countries_dict, names, eu, demonyms = get_country_data()
+
+
+
 def get_paragraph(question, sentences, embeddings, model):
     # Retrieve question Data
     question_id = question.question_id
@@ -122,7 +126,6 @@ def get_paragraph(question, sentences, embeddings, model):
 
 def question5(question, sentences, embeddings, model):
     # Retrieve Data
-    countries_dict, names, eu, demonyms = get_country_data()
     paragraph = get_paragraph(question, sentences, embeddings, model)
     # Initialize Spacy
     nlp = English()
@@ -154,25 +157,13 @@ def question8(question, sentences):
             return QuestionResponse(answer_id = 1, question_id = 8, justification = sentences[index: index + 100])
     return QuestionResponse(answer_id = 0, question_id = 8, justification = '')
     
-    nlp = English()
-    matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    patterns = [nlp.make_doc(name) for name in ["Binding Corporate Rules", "BCR",
-                                                "Standard Contractual Clauses", "SCC"]]
-    matcher.add("Rules", None, *patterns)
-    doc = nlp(sentences)
-    matches = matcher(doc)
-    justification = ''
-    for m in matches:
-        justification += ' '.join([str(a) for a in list(doc[m[0]: m[1] + 20])])
-    Answers = [0, 1]
-    return QuestionResponse(answer_id=Answers[matches != []], question_id=8, justification=justification)
+
 
 # Questions 9, 10
 
 
 def question9(question, sentences, embeddings, model):
     # Retrieve Data
-    countries_dict, names, eu, demonyms = get_country_data()
     paragraph = get_paragraph(question, sentences, embeddings, model)
     # Initialize Spacy
     nlp = English()
@@ -195,7 +186,6 @@ def question9(question, sentences, embeddings, model):
 
 def question11(question, sentences, embeddings, model):
     # Retrieve Data
-    countries_dict, names, eu, demonyms = get_country_data()
     paragraph = get_paragraph(question, sentences, embeddings, model)
     # Initialize Spacy
     nlp = English()
