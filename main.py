@@ -6,6 +6,8 @@ from datathon_ai.extractors import BasicCountryExtractor, BasicExtractor, Questi
 from datathon_ai.interfaces import FormDataModel, CountryReferential, COUNTRY_QUESTIONS_NUMBERS, \
     NOT_COUNTRY_QUESTIONS_NUMBERS
 
+from datathon_ai.questions.utils import prepare_sentences
+
 from sentence_transformers import SentenceTransformer
 import time
 
@@ -16,10 +18,6 @@ if dev:
 else:
     model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
 
-def prepare_sentences(sentences):
-    text_list = sentences.split("\n")
-    text_list = [a for a in text_list if len(a) > 10]
-    return text_list
 
 def main() -> Dict[int, int]:
     """

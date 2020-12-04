@@ -1,9 +1,7 @@
-from spacy.lang.en import English
-from spacy.matcher import PhraseMatcher
 import pandas as pd
 import numpy as np
 from datathon_ai.interfaces import QuestionResponse
-from .utils import countries_dict, names, eu, demonyms
+from .utils import countries_dict, names, eu, demonyms, prepare_sentences
 
 
 # model = SentenceTransformer('distilroberta-base-msmarco-v2')
@@ -38,43 +36,6 @@ def getId(name, countries_dict):
         if corresponds_to(country, name):
             return i
     return -1
-
-
-def prepare_sentences(sentences):
-    text_list = sentences.split("\n")
-    text_list = [a for a in text_list if a != '']
-    return text_list
-
-
-# def get_country_data():
-#     countries_key = 'resources/countries_code.csv'
-#     eu_key = 'resources/eu.csv'
-
-#     # Load data into a Pandas Data Frame
-
-#     countries = pd.read_csv(countries_key)
-#     eu = pd.read_csv(eu_key)
-#     eu = list(np.array(eu.values).transpose()[0])
-#     names = countries["name"]
-#     names = list(names) + ["U.S.", "U.K."]
-#     countries_dict = {}
-#     for country in countries.values:
-#         countries_dict[country[0]] = list(country[1:])
-
-#     countries_demonym_key = 'resources/countries_demonym.csv'
-#     countries_demonym = pd.read_csv(countries_demonym_key)
-#     demonyms = list(countries_demonym["fdemonym"]) + \
-#         list(countries_demonym["mdemonym"])
-
-#     for i in countries_dict.keys():
-#         country = countries_demonym[countries_demonym["id"] == i]
-#         countries_dict[i] += list(country["fdemonym"]) + \
-#             list(country["mdemonym"])
-#         countries_dict[i] = [str(c).lower() for c in countries_dict[i]]
-#     return countries_dict, names, eu, demonyms
-
-
-# countries_dict, names, eu, demonyms = get_country_data()
 
 
 
@@ -122,20 +83,14 @@ def get_paragraph(question, sentences, embeddings, model):
 def question5(question, sentences, embeddings, model):
     # Retrieve Data
     paragraph = get_paragraph(question, sentences, embeddings, model)
-    # Initialize Spacy
-    nlp = English()
-    matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    patterns = [nlp.make_doc(name) for name in names]
-    matcher.add("Names", None, *patterns)
     responseNames = set([])
-    # Get the matches
     for s in paragraph:
-        doc = nlp(s)
-        matches = matcher(doc)
-        for m in matches:
-            country = str(doc[m[1]:m[2]])
-            if country not in eu:
-                responseNames.add(country)
+        for name in names:
+            index = s.find(name)
+            if index != -1:
+                country = s[index: index+len(name)]
+                if country not in eu:
+                    responseNames.add(country)
     response = set([getId(name, countries_dict) for name in responseNames])
     response = sorted(list(response))
     return [QuestionResponse(answer_id=response[i], question_id=5+i, justification=paragraph) for i in range(len(response))]
@@ -160,20 +115,16 @@ def question8(question, sentences):
 def question9(question, sentences, embeddings, model):
     # Retrieve Data
     paragraph = get_paragraph(question, sentences, embeddings, model)
-    # Initialize Spacy
-    nlp = English()
-    matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    patterns = [nlp.make_doc(str(name)) for name in demonyms+names]
-    matcher.add("Names", None, *patterns)
-    responseNames = set([])
-
+    demonyms_names = demonyms+names
     # Get the matches
+    responseNames = set([])
     for s in paragraph:
-        doc = nlp(s)
-        matches = matcher(doc)
-        for m in matches:
-            country = str(doc[m[1]:m[2]])
-            responseNames.add(country)
+        for name in demonyms_names:
+            name = str(name)
+            index = s.find(name)
+            if index != -1:
+                country = s[index: index+len(name)]
+                responseNames.add(country)
     response = set([getId(name, countries_dict) for name in responseNames])
     response = sorted(list(response))
     return [QuestionResponse(answer_id=response[i], question_id=9+i, justification=paragraph) for i in range(len(response))]
@@ -182,20 +133,16 @@ def question9(question, sentences, embeddings, model):
 def question11(question, sentences, embeddings, model):
     # Retrieve Data
     paragraph = get_paragraph(question, sentences, embeddings, model)
-    # Initialize Spacy
-    nlp = English()
-    matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    patterns = [nlp.make_doc(str(name)) for name in demonyms+names]
-    matcher.add("Names", None, *patterns)
-    responseNames = set([])
-
+    demonyms_names = demonyms+names
     # Get the matches
+    responseNames = set([])
     for s in paragraph:
-        doc = nlp(s)
-        matches = matcher(doc)
-        for m in matches:
-            country = str(doc[m[1]:m[2]])
-            responseNames.add(country)
+        for name in demonyms_names:
+            name = str(name)
+            index = s.find(name)
+            if index != -1:
+                country = s[index: index+len(name)]
+                responseNames.add(country)
     response = set([getId(name, countries_dict) for name in responseNames])
     response = sorted(list(response))
     return [QuestionResponse(answer_id=response[i], question_id=11+i, justification=paragraph) for i in range(len(response))]
