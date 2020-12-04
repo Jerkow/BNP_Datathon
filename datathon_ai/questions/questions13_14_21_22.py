@@ -10,7 +10,7 @@ from datathon_ai.interfaces import FormDataModel, QuestionResponse
 
 # model = AutoTokenizer.from_pretrained('./resources/distilbert-base-nli-stsb-mean-tokens/')
 # model = SentenceTransformer('distilroberta-base-msmarco-v2')
-model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
+# model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
 
 
 
@@ -19,7 +19,7 @@ def is_ISO_27001_certified(whole_text):
     return QuestionResponse(answer_id=1 if ("iso27001" in whole_text_lower) or ("iso 27001" in whole_text_lower) else 0, question_id=13, justification='')
 
 
-def is_cost_mentioned(whole_text, embeddings):
+def is_cost_mentioned(whole_text, embeddings, model):
 
     keywords = ['payment', 'fee', 'pric', 'subscri',
                 'plan', 'bill', 'purchas', 'licens']
@@ -29,7 +29,7 @@ def is_cost_mentioned(whole_text, embeddings):
     # 'What is the cost of the product or service?'
     question_embeddings = model.encode(questions)
     paragraphs = [paragraph for paragraph in whole_text.lower().split(
-        "\n") if len(paragraph) > 0]
+        "\n") if len(paragraph) > 10]
     scores = [0 for _ in paragraphs]
     thresh = 0.45   # normalement à trouver par reg log à partir de la seule feature "mesure de similarité" ?
 
@@ -63,7 +63,7 @@ def is_cost_mentioned(whole_text, embeddings):
     return QuestionResponse(answer_id=1 if max(scores) > thresh else 0, question_id=14, justification='')
 
 
-def is_audit_right_mentioned(whole_text, embeddings):
+def is_audit_right_mentioned(whole_text, embeddings, model):
 
     keywords = ['audit right', 'right to audit',
                 'audit rights', 'right of audit', 'full rights']

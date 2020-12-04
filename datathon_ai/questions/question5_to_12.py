@@ -8,8 +8,8 @@ from datathon_ai.interfaces import FormDataModel, QuestionResponse
 from sentence_transformers import SentenceTransformer
 
 # model = SentenceTransformer('distilroberta-base-msmarco-v2')
-model = SentenceTransformer(
-    '/apps/models/sentence_transformers_distilroberta_base_msmarco')
+# model = SentenceTransformer(
+#     '/apps/models/sentence_transformers_distilroberta_base_msmarco')
 
 
 questions = {5: {"question": "In which countries outside of the EU the data can be transferred to ?", "key_words": ["transfer"]},
@@ -75,7 +75,7 @@ def get_country_data():
     return countries_dict, names, eu, demonyms
 
 
-def get_paragraph(question, sentences, embeddings):
+def get_paragraph(question, sentences, embeddings, model):
     # Retrieve question Data
     question_id = question.question_id
     question = question.raw_question
@@ -83,19 +83,19 @@ def get_paragraph(question, sentences, embeddings):
     question_vec = model.encode([question])[0]
     sentences = prepare_sentences(sentences)
     # First find the paraphraphs
-    nlp = English()
-    matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    patterns = [nlp.make_doc(key_word) for key_word in key_words]
-    matcher.add("key_words", None, *patterns)
+    # nlp = English()
+    # matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
+    # patterns = [nlp.make_doc(key_word) for key_word in key_words]
+    # matcher.add("key_words", None, *patterns)
 
     similarities = [0]*len(sentences)
     max_sim = 0
     index = 0
     n = 10
     for i in range(len(sentences)):
-        doc = nlp(sentences[i])
-        count = len(matcher(doc))
-        #count = sentences[i].count("transfer")
+        count = 0
+        for word in key_words:
+            count += sentences[i].count(word)
         if count > 0:
             sim = 0
             for k in range(-n, n+1):
@@ -112,13 +112,7 @@ def get_paragraph(question, sentences, embeddings):
     for i in range(len(similarities)):
         moy_list, moy = moy_gliss(moy_list, similarities[i], n)
         moy_similarities[i] = moy
-    # plt.plot(similarities)
 
-    #print(max_sim, index)
-    # plt.plot(moy_similarities)
-    print(max(moy_similarities), np.argmax(moy_similarities))
-
-    # Finally, we get the interresting paragraph
     k = np.argmax(moy_similarities)
     paragraph = sentences[int(k): int(k+2*n)]
     return paragraph
@@ -126,10 +120,10 @@ def get_paragraph(question, sentences, embeddings):
 # Question 5, 6, 7
 
 
-def question5(question, sentences, embeddings):
+def question5(question, sentences, embeddings, model):
     # Retrieve Data
     countries_dict, names, eu, demonyms = get_country_data()
-    paragraph = get_paragraph(question, sentences, embeddings)
+    paragraph = get_paragraph(question, sentences, embeddings, model)
     # Initialize Spacy
     nlp = English()
     matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
@@ -152,6 +146,14 @@ def question5(question, sentences, embeddings):
 
 
 def question8(question, sentences):
+    
+    sentences_lower = sentences.lower()
+    for word in ["Binding Corporate Rules", "BCR", "Standard Contractual Clauses", "SCC"]:
+        index = sentences_lower.find(word.lower())
+        if index >= 0:
+            return QuestionResponse(answer_id = 1, question_id = 8, justification = sentences[index: index + 100])
+    return QuestionResponse(answer_id = 0, question_id = 8, justification = '')
+    
     nlp = English()
     matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
     patterns = [nlp.make_doc(name) for name in ["Binding Corporate Rules", "BCR",
@@ -162,17 +164,16 @@ def question8(question, sentences):
     justification = ''
     for m in matches:
         justification += ' '.join([str(a) for a in list(doc[m[0]: m[1] + 20])])
-    print(justification)
     Answers = [0, 1]
     return QuestionResponse(answer_id=Answers[matches != []], question_id=8, justification=justification)
 
 # Questions 9, 10
 
 
-def question9(question, sentences, embeddings):
+def question9(question, sentences, embeddings, model):
     # Retrieve Data
     countries_dict, names, eu, demonyms = get_country_data()
-    paragraph = get_paragraph(question, sentences, embeddings)
+    paragraph = get_paragraph(question, sentences, embeddings, model)
     # Initialize Spacy
     nlp = English()
     matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
@@ -192,10 +193,10 @@ def question9(question, sentences, embeddings):
     return [QuestionResponse(answer_id=response[i], question_id=9+i, justification=paragraph) for i in range(len(response))]
 
 
-def question11(question, sentences, embeddings):
+def question11(question, sentences, embeddings, model):
     # Retrieve Data
     countries_dict, names, eu, demonyms = get_country_data()
-    paragraph = get_paragraph(question, sentences, embeddings)
+    paragraph = get_paragraph(question, sentences, embeddings, model)
     # Initialize Spacy
     nlp = English()
     matcher = PhraseMatcher(nlp.vocab, attr="LOWER")

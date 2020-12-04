@@ -3,7 +3,7 @@ import spacy
 from spacy.matcher import PhraseMatcher
 from spacy.matcher import Matcher
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("/apps/models/ner_spacy_en")
 
 
 def question1(text):

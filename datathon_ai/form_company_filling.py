@@ -8,10 +8,10 @@ class FormCompanyFilling:
     def __init__(self, questions_extractors: List[QuestionExtractor]):
         self.questions_extractors = questions_extractors
     
-    def fill(self, text, embeddings) -> FormCompanyResponse:
+    def fill(self, text, embeddings, model) -> FormCompanyResponse:
         responses = []
         for extractor in self.questions_extractors:
-            extractor_response: List[QuestionResponse] = extractor.extract(text, embeddings)
+            extractor_response: List[QuestionResponse] = extractor.extract(text, embeddings, model)
             responses.extend(extractor_response)
         form_company_response = FormCompanyResponse.from_list_question_response(responses)
         return form_company_response

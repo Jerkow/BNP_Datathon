@@ -7,7 +7,7 @@ from datathon_ai.interfaces import FormDataModel, CountryReferential, COUNTRY_QU
     NOT_COUNTRY_QUESTIONS_NUMBERS
 
 from sentence_transformers import SentenceTransformer
-import gc
+import time
 
 # model = SentenceTransformer('distilroberta-base-msmarco-v2')
 model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
@@ -58,17 +58,22 @@ def main() -> Dict[int, int]:
     print("RUNNING PREDICTION")
     results: Dict[int, int] = {}
     for i, path in enumerate(path_to_files):
+        start = time.time()
         print(f"File : {path}")
         with open(path, "r") as input_file:
             text = input_file.read()
+        print("... Encoding ...")
         embeddings = model.encode(prepare_sentences(text))
-        form_company_response = form_company_filling.fill(text, embeddings)
+        # embeddings = []
+        print("Successfully encoded")
+        form_company_response = form_company_filling.fill(text, embeddings, model)
         form_company_response.sort_by_question_id() # ESSENTIAL : Sort the response by question number for each company
         for answer in form_company_response.answers:
             question_number = answer.question_id + i * 22 # ESSENTIAL : each company has 22 questions. Each question_number in results should be unique
             results[question_number] = answer.answer_id
         # gc.collect()
-
+        end = time.time()
+        print(end-start, '\n')
     # CHECK FORMAT RESULTS IS DATACHALLENGE PLATFORM COMPATIBLE
     assert len(results) == len(path_to_files) * (len(COUNTRY_QUESTIONS_NUMBERS) + len(NOT_COUNTRY_QUESTIONS_NUMBERS))
     assert set(list(results.keys())) == {i for i in range(1,221)}
