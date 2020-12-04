@@ -36,4 +36,3 @@ for key, l in countries_dict.items():
     for x in l:
         countries_dict_inverse[x] = key
 
-print(countries_dict_inverse)

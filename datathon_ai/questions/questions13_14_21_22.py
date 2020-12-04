@@ -3,9 +3,7 @@
 
 from nltk.tokenize import word_tokenize
 from scipy import spatial
-from sentence_transformers import SentenceTransformer
-from transformers import AutoModel, AutoTokenizer
-from datathon_ai.interfaces import FormDataModel, QuestionResponse
+from datathon_ai.interfaces import QuestionResponse
 
 
 # model = AutoTokenizer.from_pretrained('./resources/distilbert-base-nli-stsb-mean-tokens/')

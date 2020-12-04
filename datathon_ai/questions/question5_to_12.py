@@ -1,11 +1,10 @@
 from spacy.lang.en import English
 from spacy.matcher import PhraseMatcher
 import pandas as pd
-import io
 import numpy as np
-import matplotlib.pyplot as plt
-from datathon_ai.interfaces import FormDataModel, QuestionResponse
-from sentence_transformers import SentenceTransformer
+from datathon_ai.interfaces import QuestionResponse
+from .utils import countries_dict, names, eu, demonyms
+
 
 # model = SentenceTransformer('distilroberta-base-msmarco-v2')
 # model = SentenceTransformer(
@@ -47,35 +46,35 @@ def prepare_sentences(sentences):
     return text_list
 
 
-def get_country_data():
-    countries_key = 'resources/countries_code.csv'
-    eu_key = 'resources/eu.csv'
+# def get_country_data():
+#     countries_key = 'resources/countries_code.csv'
+#     eu_key = 'resources/eu.csv'
 
-    # Load data into a Pandas Data Frame
+#     # Load data into a Pandas Data Frame
 
-    countries = pd.read_csv(countries_key)
-    eu = pd.read_csv(eu_key)
-    eu = list(np.array(eu.values).transpose()[0])
-    names = countries["name"]
-    names = list(names) + ["U.S.", "U.K."]
-    countries_dict = {}
-    for country in countries.values:
-        countries_dict[country[0]] = list(country[1:])
+#     countries = pd.read_csv(countries_key)
+#     eu = pd.read_csv(eu_key)
+#     eu = list(np.array(eu.values).transpose()[0])
+#     names = countries["name"]
+#     names = list(names) + ["U.S.", "U.K."]
+#     countries_dict = {}
+#     for country in countries.values:
+#         countries_dict[country[0]] = list(country[1:])
 
-    countries_demonym_key = 'resources/countries_demonym.csv'
-    countries_demonym = pd.read_csv(countries_demonym_key)
-    demonyms = list(countries_demonym["fdemonym"]) + \
-        list(countries_demonym["mdemonym"])
+#     countries_demonym_key = 'resources/countries_demonym.csv'
+#     countries_demonym = pd.read_csv(countries_demonym_key)
+#     demonyms = list(countries_demonym["fdemonym"]) + \
+#         list(countries_demonym["mdemonym"])
 
-    for i in countries_dict.keys():
-        country = countries_demonym[countries_demonym["id"] == i]
-        countries_dict[i] += list(country["fdemonym"]) + \
-            list(country["mdemonym"])
-        countries_dict[i] = [str(c).lower() for c in countries_dict[i]]
-    return countries_dict, names, eu, demonyms
+#     for i in countries_dict.keys():
+#         country = countries_demonym[countries_demonym["id"] == i]
+#         countries_dict[i] += list(country["fdemonym"]) + \
+#             list(country["mdemonym"])
+#         countries_dict[i] = [str(c).lower() for c in countries_dict[i]]
+#     return countries_dict, names, eu, demonyms
 
 
-countries_dict, names, eu, demonyms = get_country_data()
+# countries_dict, names, eu, demonyms = get_country_data()
 
 
 
@@ -87,10 +86,6 @@ def get_paragraph(question, sentences, embeddings, model):
     question_vec = model.encode([question])[0]
     sentences = prepare_sentences(sentences)
     # First find the paraphraphs
-    # nlp = English()
-    # matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    # patterns = [nlp.make_doc(key_word) for key_word in key_words]
-    # matcher.add("key_words", None, *patterns)
 
     similarities = [0]*len(sentences)
     max_sim = 0
