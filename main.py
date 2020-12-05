@@ -7,16 +7,27 @@ from datathon_ai.interfaces import FormDataModel, CountryReferential, COUNTRY_QU
     NOT_COUNTRY_QUESTIONS_NUMBERS
 
 from datathon_ai.questions.utils import prepare_sentences
-
-from sentence_transformers import SentenceTransformer
 import time
+from transformers import AutoTokenizer
 
-dev = True
+
+
+dev = False
 
 if dev:
-    model = SentenceTransformer('distilroberta-base-msmarco-v2')
+    # Import the model
+    # tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/distilbert-base-nli-stsb-mean-tokens")
+    # model = AutoModel.from_pretrained("sentence-transformers/distilbert-base-nli-stsb-mean-tokens")
+    # model.save_pretrained("./resources/distilbert-base-nli-stsb-mean-tokens")
+    # tokenizer.save_pretrained("./resources/distilbert-base-nli-stsb-mean-tokens")
+    # model = tokenizer
+
+    # model = SentenceTransformer('distilroberta-base-msmarco-v2')
+    # model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
+    model = AutoTokenizer.from_pretrained("./resources/distilbert-base-nli-stsb-mean-tokens")
 else:
-    model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
+    model = AutoTokenizer.from_pretrained("./resources/distilbert-base-nli-stsb-mean-tokens")
+    # model = SentenceTransformer('/apps/models/sentence_transformers_distilroberta_base_msmarco')
 
 
 def main() -> Dict[int, int]:
@@ -62,26 +73,30 @@ def main() -> Dict[int, int]:
     print("##################################")
     print("RUNNING PREDICTION")
     results: Dict[int, int] = {}
+    start_time = time.time()
     for i, path in enumerate(path_to_files):
         start = time.time()
         print(f"File : {path}")
         with open(path, "r") as input_file:
             text = input_file.read()
         print("... Encoding ...")
+        start_encoding = time.time()
         embeddings = model.encode(prepare_sentences(text))
         # embeddings = []
         print("Successfully encoded")
+        print("Encoding time : ", time.time() - start_encoding)
+
         form_company_response = form_company_filling.fill(text, embeddings, model)
         form_company_response.sort_by_question_id() # ESSENTIAL : Sort the response by question number for each company
         for answer in form_company_response.answers:
             question_number = answer.question_id + i * 22 # ESSENTIAL : each company has 22 questions. Each question_number in results should be unique
             results[question_number] = answer.answer_id
         # gc.collect()
-        end = time.time()
-        print(end-start, '\n')
+        print("File time :", time.time()-start, '\n')
     # CHECK FORMAT RESULTS IS DATACHALLENGE PLATFORM COMPATIBLE
     assert len(results) == len(path_to_files) * (len(COUNTRY_QUESTIONS_NUMBERS) + len(NOT_COUNTRY_QUESTIONS_NUMBERS))
     assert set(list(results.keys())) == {i for i in range(1,221)}
+    print("Full Time", time.time()-start_time)
     return results
 
 

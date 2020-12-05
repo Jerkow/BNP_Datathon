@@ -1,16 +1,10 @@
 #imports
 import spacy
 from datathon_ai.interfaces import FormDataModel, QuestionResponse
-import pandas as pd
-import numpy as np
-# nlp = spacy.load("/apps/models/ner_spacy_en")
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("/apps/models/ner_spacy_en")
+# nlp = spacy.load("en_core_web_sm")
 
-# from utils import countries_dict_inverse
-
-eu = pd.read_csv('resources/eu.csv')
-eu = list(np.array(eu.values).transpose()[0])
-eu = [country.lower() for country in eu]
+from .utils import eu
 
 
 def question1(text):

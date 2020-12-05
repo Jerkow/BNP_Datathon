@@ -2,9 +2,8 @@
 # nltk.download('punkt')
 
 from nltk.tokenize import word_tokenize
-from scipy import spatial
 from datathon_ai.interfaces import QuestionResponse
-from .utils import prepare_sentences
+from .utils import prepare_sentences, cosine
 
 
 
@@ -31,8 +30,8 @@ def is_cost_mentioned(whole_text, embeddings, model):
     paragraphs = prepare_sentences(whole_text.lower())
     
     scores = [0 for _ in paragraphs]
-    thresh = 0.45   # normalement à trouver par reg log à partir de la seule feature "mesure de similarité" ?
-
+    # thresh = 0.45   # normalement à trouver par reg log à partir de la seule feature "mesure de similarité" ?
+    thresh = 10
     for i in range(len(paragraphs)):
 
         paragraph = paragraphs[i]
@@ -53,13 +52,14 @@ def is_cost_mentioned(whole_text, embeddings, model):
 
                     for question_embedding in question_embeddings:
 
-                        score += spatial.distance.cosine(
+                        score += cosine(
                             paragraph_embedding, question_embedding)
 
                     score /= len(questions)
                     scores[i] = score
 
                     break
+    # print("max", max(scores))
     return QuestionResponse(answer_id=1 if max(scores) > thresh else 0, question_id=14, justification='')
 
 
@@ -73,8 +73,8 @@ def is_audit_right_mentioned(whole_text, embeddings, model):
     question_embeddings = model.encode(questions)
     paragraphs = prepare_sentences(whole_text.lower())
     scores = [0 for _ in paragraphs]
-    thresh = 0.4    # normalement à trouver par reg log à partir de la seule feature "mesure de similarité" ?
-
+    # thresh = 0.4    # normalement à trouver par reg log à partir de la seule feature "mesure de similarité" ?
+    thresh = 16
     for i in range(len(paragraphs)):
 
         paragraph = paragraphs[i]
@@ -83,7 +83,7 @@ def is_audit_right_mentioned(whole_text, embeddings, model):
         score_keywords = 0
 
         if "28" in paragraph:
-            return QuestionResponse(answer_id=1, question_id=21, justification='')   # on sait direct que c'est bon
+            return QuestionResponse(answer_id=1, question_id=21, justification=paragraph)   # on sait direct que c'est bon
 
         if len(tokens) < 5:
             continue
@@ -96,7 +96,7 @@ def is_audit_right_mentioned(whole_text, embeddings, model):
 
                 for question_embedding in question_embeddings:
 
-                    score_root += spatial.distance.cosine(
+                    score_root += cosine(
                         paragraph_embedding, question_embedding)
                     score_root /= len(questions)
                     break
@@ -109,14 +109,14 @@ def is_audit_right_mentioned(whole_text, embeddings, model):
 
                 for question_embedding in question_embeddings:
 
-                    score_keywords_para.append(spatial.distance.cosine(
+                    score_keywords_para.append(cosine(
                         paragraph_embedding, question_embedding))
 
                 score_keywords = max(score_keywords_para)
                 break
 
         scores[i] = max(score_keywords, score_root)
-
+    # print("max", max(scores))
     return QuestionResponse(answer_id=1 if max(scores) > thresh else 0, question_id=21, justification='')
 
 

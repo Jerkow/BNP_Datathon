@@ -13,7 +13,6 @@ class BasicExtractor(QuestionExtractor):
     def extract(self, text: str, embeddings, model) -> List[QuestionResponse]:
         responses = []
         for question_id in self.question_ids:
-            print(question_id)
             start = time.time()
             question_data = self.form_data_model.get_specific_question_data_model(question_id)
             if question_id == 3:
@@ -21,9 +20,14 @@ class BasicExtractor(QuestionExtractor):
                 responses.append(question3[0])
             elif question_id ==4:
                 responses.append(question3[1])
+            elif question_id == 15:
+                question15 = question(question_data, text, embeddings, model)
+                responses.append(question15[0])
+            elif question_id == 16:
+                responses.append(question15[1])
             else: 
                 responses.append(question(question_data, text, embeddings, model))
             end = time.time()
-            print(end - start)
+            print(question_id, end - start)
         return responses
     

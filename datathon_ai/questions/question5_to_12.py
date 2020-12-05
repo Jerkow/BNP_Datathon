@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from datathon_ai.interfaces import QuestionResponse
-from .utils import countries_dict, names, eu, demonyms, prepare_sentences
+from .utils import countries_dict, names, eu, demonyms, prepare_sentences, cosine
 
 
 # model = SentenceTransformer('distilroberta-base-msmarco-v2')
@@ -12,10 +12,6 @@ from .utils import countries_dict, names, eu, demonyms, prepare_sentences
 questions = {5: {"question": "In which countries outside of the EU the data can be transferred to ?", "key_words": ["transfer"]},
              9: {"question": "What is the country of the applicable law of the contract?", "key_words": ["applicable law", "applicable", "applicable laws"]},
              11: {"question": "What is the country jurisdiction applicable in the event of a dispute?", "key_words": ["jurisdiction"]}}
-
-
-def cosine(u, v):
-    return np.abs(np.dot(u, v)) / np.sqrt(np.linalg.norm(u) * np.linalg.norm(v))
 
 
 def moy_gliss(liste, add, n):

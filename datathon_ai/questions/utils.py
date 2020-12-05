@@ -30,13 +30,10 @@ def get_country_data():
 
 countries_dict, names, eu, demonyms = get_country_data()
 
-countries_dict_inverse = {}
-
-for key, l in countries_dict.items():
-    for x in l:
-        countries_dict_inverse[x] = key
-
 def prepare_sentences(sentences):
     text_list = sentences.split("\n")
-    text_list = [a for a in text_list if len(a) > 10]
+    text_list = [a for a in text_list if len(a) > 0]
     return text_list
+
+def cosine(u, v):
+    return np.abs(np.dot(u, v)) / np.sqrt(np.linalg.norm(u) * np.linalg.norm(v))

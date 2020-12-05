@@ -19,7 +19,6 @@ class BasicCountryExtractor(QuestionExtractor):
         responses = []
         answer_dict = {}
         for question_id in self.question_ids:
-            print(question_id)
             start = time.time()
             question_data = self.form_data_model.get_specific_question_data_model(question_id)
             if question_id in range(5,8):
@@ -37,6 +36,6 @@ class BasicCountryExtractor(QuestionExtractor):
             else: 
                 responses.append(question(question_data, text, embeddings, model))
             end = time.time()
-            print(end - start)
+            print(question_id, end - start)
         return responses
     

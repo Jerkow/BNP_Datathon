@@ -1,6 +1,7 @@
 from .question5_to_12 import question5, question8, question9, question11
 from .questions13_14_21_22 import is_ISO_27001_certified, is_cost_mentioned, is_audit_right_mentioned, is_retention_date_mentioned
 from .question1_to_4 import question1, question2, question3_4
+from .questions15_to_20 import question15_16
 from datathon_ai.interfaces import QuestionResponse
 
 
@@ -24,6 +25,8 @@ def question(question, text, embeddings, model):
         return is_ISO_27001_certified(text)
     elif question_id == 14:
         return is_cost_mentioned(text, embeddings, model)
+    elif question_id == 15:
+        return question15_16(text)
     elif question_id == 21:
         return is_audit_right_mentioned(text, embeddings, model)
     elif question_id == 22:
