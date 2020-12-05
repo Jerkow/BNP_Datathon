@@ -5,7 +5,7 @@ from datathon_ai.interfaces import QuestionResponse
 from .utils import prepare_sentences
 
 import spacy
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("/apps/models/ner_spacy_en")
 
 
 def is_ISO_27001_certified(whole_text):
